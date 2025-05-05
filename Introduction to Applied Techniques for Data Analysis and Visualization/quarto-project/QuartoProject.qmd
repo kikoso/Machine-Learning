@@ -1,5 +1,5 @@
 ---
-title: "Uso de bicicletas públicas en NYC: Un análisis estacional"
+title: "Public Bicycle Usage in NYC: A Seasonal Analysis"
 author: "Enrique López-Mañas"
 format: 
   html:
@@ -18,13 +18,13 @@ This case study aims to analyze the usage patterns of the public bike-sharing sy
 
 The analyses focus on the following aspects:
 
-- **Seasonality**: Variations in bike usage will be examined according to the seasons of the year (spring, summer, fall, and winter), evaluating factors such as trip duration and the number of users per season.
+-   **Seasonality**: Variations in bike usage will be examined according to the seasons of the year (spring, summer, fall, and winter), evaluating factors such as trip duration and the number of users per season.
 
-- **Weather Conditions**: The impact of rain on bike usage will be analyzed. Usage patterns on rainy days will be compared to those on dry days, observing whether weather conditions affect the number of trips taken and their average duration.
+-   **Weather Conditions**: The impact of rain on bike usage will be analyzed. Usage patterns on rainy days will be compared to those on dry days, observing whether weather conditions affect the number of trips taken and their average duration.
 
-- **User Type**: Differences in user behavior will be studied according to user type (occasional vs. member), with the goal of identifying variations in usage frequency, trip duration, or peak activity hours between these groups.
+-   **User Type**: Differences in user behavior will be studied according to user type (occasional vs. member), with the goal of identifying variations in usage frequency, trip duration, or peak activity hours between these groups.
 
-- **Impact of Holidays and Festivities**: The study will also investigate how holidays and festive days may influence Citi Bike usage by comparing activity on these days to that on regular working days.
+-   **Impact of Holidays and Festivities**: The study will also investigate how holidays and festive days may influence Citi Bike usage by comparing activity on these days to that on regular working days.
 
 Through these analyses, the aim is to identify relevant patterns that can help better understand user behavior and its relationship with seasonal and weather conditions, as well as usage differences based on demographic and special characteristics.
 
@@ -40,27 +40,27 @@ The downloaded files correspond to trips made during the year starting in 2024. 
 
 The original dataset contains the following variables:
 
-- `ride_id`: unique identifier of the ride.
+-   `ride_id`: unique identifier of the ride.
 
-- `rideable_type`: type of bike used (classic, electric, or dockless).
+-   `rideable_type`: type of bike used (classic, electric, or dockless).
 
-- `started_at`: date and time when the ride started.
+-   `started_at`: date and time when the ride started.
 
-- `ended_at`: date and time when the ride ended.
+-   `ended_at`: date and time when the ride ended.
 
-- `start_station_name`: name of the starting station.
+-   `start_station_name`: name of the starting station.
 
-- `start_station_id`: identifier of the starting station.
+-   `start_station_id`: identifier of the starting station.
 
-- `end_station_name`: name of the destination station.
+-   `end_station_name`: name of the destination station.
 
-- `end_station_id`: identifier of the destination station.
+-   `end_station_id`: identifier of the destination station.
 
-- `start_lat`, `start_lng`: geographic coordinates of the starting location.
+-   `start_lat`, `start_lng`: geographic coordinates of the starting location.
 
-- `end_lat`, `end_lng`: geographic coordinates of the destination.
+-   `end_lat`, `end_lng`: geographic coordinates of the destination.
 
-- `member_casual`: user type (`member` for subscribed users or `casual` for occasional users).
+-   `member_casual`: user type (`member` for subscribed users or `casual` for occasional users).
 
 > Note: The data **does not include variables directly related to the user's gender or age**, so the analysis is limited to the user type (`member_casual`) as the only sociodemographic variable.
 
@@ -70,13 +70,13 @@ Since the monthly files were not entirely homogeneous (for example, some columns
 
 Additionally, new derived variables were created to facilitate temporal analysis:
 
-- `duration`: ride duration in minutes, calculated as the difference between `ended_at` and `started_at`.
+-   `duration`: ride duration in minutes, calculated as the difference between `ended_at` and `started_at`.
 
-- `month`: month of the year extracted from the start date.
+-   `month`: month of the year extracted from the start date.
 
-- `day_of_week`: day of the week on which the ride took place.
+-   `day_of_week`: day of the week on which the ride took place.
 
-- `season`: season of the year, classified according to the month (`Winter`, `Spring`, `Summer`, `Fall`).
+-   `season`: season of the year, classified according to the month (`Winter`, `Spring`, `Summer`, `Fall`).
 
 Records with negative durations or durations over 24 hours were also removed, as they were considered measurement errors or outliers.
 
@@ -92,8 +92,10 @@ Before merging the CSV files, it is important to ensure that all files have the 
 
 The process began by listing the headers of each CSV file to identify the columns present in each one. This was done using the `read_csv()` function with the argument `n_max = 0`, which allows reading only the headers without loading the full data.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 install.packages("purrr")
 install.packages("readr")
@@ -116,8 +118,10 @@ column_lists
 
 The column merging process aims to unify multiple CSV files into a single, clean, and consistent dataset. First, the files are loaded from the "data" folder and duplicate columns are removed. Then, the common columns across all files are identified to ensure they all share the same structure. If any columns are missing in some files, they are added with NA values and reordered to match the common columns. Additionally, station identifier columns are standardized to have consistent data types. Finally, the standardized files are combined into a single dataset using `bind_rows()`, ensuring that rows from each file are appended consistently.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 # Load necessary libraries
 library(dplyr)
 library(readr)
@@ -189,8 +193,10 @@ head(citibike_data_cleaned)
 
 In this step, the `procesar_en_bloques` function is defined to efficiently handle large volumes of data. Since the dataset can be very large, it is divided into blocks of a specified size (by default, 1 million rows). The function iterates through each data block, applying several transformations: it converts the start and end times of each ride to POSIX format, calculates the ride duration in minutes, extracts the month and day of the week, and assigns a season (spring, summer, fall, winter) based on the start month. The results of each block are stored and then combined using `bind_rows()`. Finally, memory is freed using `gc()` to optimize the performance of the process.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(tidyverse)
 library(lubridate)
 library(fasttime)
@@ -249,8 +255,10 @@ gc()
 
 In this section, we verify the number of rows in each CSV file to ensure that all files have been loaded correctly. The `map_int()` function is used to count the rows of each file, and the result is printed for review.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 # Verify the number of rows in each CSV file read, suppressing the column specification message
 tibble(file = files) %>%
   mutate(rows = map_int(file, ~nrow(read_csv(.x, show_col_types = FALSE)))) %>%
@@ -263,8 +271,10 @@ tibble(file = files) %>%
 
 This section provides an overview of the cleaned dataset using the `glimpse()` function, which displays the structure and the first few rows of the data. Additionally, descriptive statistics for the `duration` variable are calculated to gain a basic understanding of the distribution of bike trip durations in the system.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 # Data Overview
 glimpse(citibike_data_cleaned)
 
@@ -278,8 +288,10 @@ In this section, the number of trips made in the bicycle system by season of the
 
 The bar chart clearly shows the distribution of bicycle trips across the four seasons. It is evident that **Summer has the highest number of bicycle trips**, followed by Autumn and then Spring. **Winter has the lowest number of trips** by a significant margin compared to the other seasons. This pattern is expected, as warmer weather and longer daylight hours in Summer and Autumn are generally more conducive to cycling than the colder, shorter days of Winter and early Spring.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 citibike_data_cleaned %>%
   mutate(season = factor(season, levels = c("Spring", "Summer", "Fall", "Winter"))) %>%
   count(season) %>%
@@ -297,6 +309,9 @@ In this section, the distribution of trips by user type is analyzed, differentia
 The bar chart illustrates the distribution of trips between casual and member users. It shows that the **number of trips made by member users is significantly higher** than the number of trips made by casual users. This indicates that registered members constitute the majority of users utilizing the bicycle system for trips.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 citibike_data_cleaned %>%
   count(member_casual) %>%
   ggplot(aes(x = member_casual, y = n, fill = member_casual)) +
@@ -312,6 +327,9 @@ In this analysis, the average duration of trips is evaluated based on the user t
 The accompanying bar chart visually represents the average trip duration for casual versus member users. It clearly shows that **casual users have a significantly longer average trip duration** compared to member users. The bar for casual users is considerably taller, indicating their trips tend to last for more minutes on average than those taken by registered members. This suggests that casual users might use the bikes for longer recreational rides or one-off journeys, while members may use them more frequently for shorter commutes or regular trips.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 citibike_data_cleaned %>%
   group_by(member_casual) %>%
   summarise(avg_duration = mean(duration, na.rm = TRUE)) %>%
@@ -328,6 +346,9 @@ In this analysis, the number of trips is analyzed based on the type of bicycle. 
 Tbe chart shows the distribution of trips between different bicycle types. From the chart, it is evident that **electric bikes are used for a significantly higher number of trips** compared to classic bikes. The bar representing electric bikes is substantially taller than the bar for classic bikes, indicating a strong preference for, or greater availability/usage of, electric bicycles within the system.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 
@@ -347,12 +368,14 @@ ggplot(bike_type_count, aes(x = reorder(rideable_type, n), y = n, fill = rideabl
 
 ## Detailed Temporal Analysis
 
-
 ### Monthly Trend of Trips
 
 The line graph illustrates a clear seasonal pattern in the number of Citi Bike trips for both casual and member users over the observed year. Both user types show a significant increase in ridership starting from the low point in January, peaking during the warmer months (approximately July through October), and then declining sharply towards the following January. Member users consistently account for a substantially higher number of trips each month compared to casual users, reinforcing their role as the primary users of the system. The peak in member trips is considerably higher than the peak for casual users, and the magnitude of monthly fluctuation appears more pronounced for members. This suggests that while both groups are influenced by seasonal factors, registered members utilize the service much more extensively throughout the year, particularly during favorable weather conditions.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 library(lubridate)
@@ -383,6 +406,9 @@ The bar chart illustrating trips by day of the week reveals distinct usage patte
 In contrast, casual users exhibit the opposite trend, with lower trip numbers during the weekdays and a significant surge in ridership over the weekend, peaking on Saturday. This pattern indicates that casual users are more inclined to use the bikes for leisure activities, recreation, or tourism, which are typically pursued during days off. The clear divergence in weekday vs. weekend usage between the two user types highlights their different motivations and use cases for the bike-sharing system.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 # Extract weekday
 citibike_data_cleaned <- citibike_data_cleaned %>%
   mutate(weekday = wday(started_at, label = TRUE, week_start = 1))
@@ -411,6 +437,9 @@ The bar chart displaying the hourly distribution of trips reveals distinct daily
 In contrast, casual users show a more spread-out distribution throughout the day, with their ridership gradually increasing from the morning, peaking over a broader period in the afternoon and early evening (roughly 12 PM to 6 PM), and then declining. They do not display the sharp, distinct commute-hour peaks seen among members. This suggests that casual users utilize the bikes for a wider variety of activities throughout the day, likely including leisure rides, sightseeing, or running errands, rather than primarily for fixed-time commuting. Both user types have minimal activity during the late night and early morning hours. The difference in hourly patterns underscores the primary use cases for each user segment - routine transportation for members and more flexible, activity-based use for casual riders.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 # Extract start hour
 citibike_data_cleaned <- citibike_data_cleaned %>%
   mutate(hour = hour(started_at))
@@ -433,6 +462,9 @@ ggplot(citibike_data_cleaned, aes(x = hour, fill = member_casual)) +
 The bar chart displays the average duration of bicycle trips across the four seasons. It clearly shows that the average trip duration is highest during the Summer, followed closely by Spring and then Fall. The average trip duration is significantly shorter in Winter compared to the other three seasons. This pattern aligns intuitively with weather conditions, as users are likely to take longer, more leisurely rides during the warmer and more pleasant months of Summer, Spring, and Fall. The considerably shorter average duration in Winter suggests that bike usage during this season may be limited to more essential or shorter trips, likely due to colder temperatures, adverse weather conditions, and shorter daylight hours making longer rides less appealing or practical.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 
@@ -450,6 +482,9 @@ citibike_data_cleaned %>%
 The chart displays the average trip duration for classic and electric bicycles. It indicates that the **average trip duration is slightly longer for classic bikes** compared to electric bikes. While the difference appears relatively small, the visual representation suggests that users tend to spend a few more minutes on average during trips taken with classic bicycles. This could imply subtle differences in how these bike types are utilized, perhaps with electric bikes being favored for quicker trips or specific types of journeys where the electric assist helps reduce travel time.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 
@@ -464,12 +499,13 @@ ggplot(bike_type_duration, aes(x = rideable_type, y = avg_duration, fill = ridea
   labs(title = "Average duration by bike type", x = "Bike type", y = "Average duration (minutes)") +
   theme_minimal()
 ```
+
 ### Comparative Analysis of Citi Bike Usage on Holidays vs. Regular Days in 2023
 
 We know that users ride less during the cold seasons. Now we are going to evaluate if the users ride less when it is **rainy or snowy**, regardless of the temperature or season. To do so, we classify each day in the dataset according to the weather conditions — whether it had **rain**, **snow**, **both**, or was **clear** — using data from the weather API from visualcrossing. Then, we compare:
 
-- the **percentage of total days** falling into each weather category, and  
-- the **percentage of total rides** that took place on those days.
+-   the **percentage of total days** falling into each weather category, and\
+-   the **percentage of total rides** that took place on those days.
 
 By plotting both metrics side by side, we can observe whether users ride **more or less than expected** under each weather condition. For example, if 10% of the days were rainy but only 4% of rides occurred on those days, this suggests a **negative impact of rain on usage**. The chart also includes a label indicating whether the ride usage is **higher (↑ Over-used)**, **lower (↓ Under-used)**, or **as expected**, relative to the frequency of those weather days.
 
@@ -479,8 +515,10 @@ Conversely, days with precipitation, whether Rain + Snow, Rain only, or Snow onl
 
 In summary, the analysis strongly suggests that rainy and snowy weather conditions have a negative impact on Citi Bike usage, with users riding significantly less than would be expected based on the frequency of these weather types. Clear weather, on the other hand, is associated with a disproportionately higher volume of rides.
 
-
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(tidyverse)
 library(jsonlite)
 library(lubridate)
@@ -551,7 +589,6 @@ ggplot(comparison, aes(x = condition)) +
 
 ```
 
-
 ## Spatial Analysis of Trips
 
 ### Trip Density by Station
@@ -561,6 +598,9 @@ The spatial plot visualizing trip density by start station reveals significant g
 Conversely, areas with fewer or smaller/darker points represent stations with lower trip volumes. The use of a log transformation on the color scale is particularly effective in this plot as it allows for better differentiation among the numerous stations with moderate to lower trip counts, making subtle variations in activity levels visible across the entire service area, not just highlighting the few busiest stations. The plot underscores that the popularity and usage of bike stations are highly dependent on their location and surrounding urban characteristics.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 library(viridis)
@@ -589,10 +629,12 @@ ggplot(station_density, aes(x = start_lng, y = start_lat)) +
 
 ### Analysis of Most Frequent Trips: Start and End Stations
 
-
 The horizontal bar chart displaying the "Top 10 start stations" highlights the busiest locations where bike trips originate within the system. **"W 21 St & 6 Ave" stands out as the most frequent starting station**, indicating a significant volume of trips beginning at this location compared to all others. The chart clearly ranks the top 10 stations by the number of originating trips, showing a decreasing volume from the first to the tenth station on the list. The presence of these specific stations in the top 10 suggests they are situated in key areas with high demand for bike rentals, likely due to factors such as proximity to transit, commercial areas, residential density, or popular destinations, making them critical hubs for the start of many journeys within the bike-sharing network.
 
 ```{r}
+#| message: false
+#| warning: false
+#| results: 'hide'
 library(dplyr)
 library(ggplot2)
 
@@ -626,12 +668,13 @@ ggplot(top_end_stations, aes(x = reorder(end_station_name, n), y = n, fill = end
        y = "Number of trips") +
   theme_minimal()
 ```
+
 ## Conclusions
 
 Based on the analysis of Citi Bike usage data for 2024, the following conclusions can be drawn:
 
-* **Seasonality significantly impacts ridership**, with Summer experiencing the highest number of trips, followed by Autumn and Spring. Winter consistently shows the lowest ridership, which is an expected pattern due to colder weather and shorter days. Average trip duration is also longer in warmer months (Summer, Spring, Fall) compared to Winter.
-* **User type reveals distinct usage patterns**. Registered members constitute the majority of users and account for a substantially higher number of trips overall. Members primarily use the bikes for regular, shorter trips, likely for commuting or errands during weekdays, particularly during morning and evening peak hours. Casual users, while taking fewer trips, tend to have significantly longer average trip durations and use the service more for leisure activities on weekends and throughout the afternoon and early evening.
-* **Weather conditions have a clear impact on usage**. Clear weather days see a disproportionately higher volume of rides compared to their frequency, indicating they are "Over-used". Conversely, days with rain or snow result in significantly lower ridership than expected based on the frequency of these conditions, indicating that users ride less when it is rainy or snowy. This suggests a negative impact of precipitation on Citi Bike usage.
-* **Electric bikes are more popular in terms of trip volume**, being used for a significantly higher number of trips compared to classic bikes. However, the average trip duration is slightly longer for classic bikes.
-* **Geographical location of stations matters**, with certain "hot spots" or areas showing a high concentration of trip origins, likely corresponding to areas with high demand such as business districts, residential areas, or transportation hubs. "W 21 St & 6 Ave" was identified as the most frequent starting station.
+-   **Seasonality significantly impacts ridership**, with Summer experiencing the highest number of trips, followed by Autumn and Spring. Winter consistently shows the lowest ridership, which is an expected pattern due to colder weather and shorter days. Average trip duration is also longer in warmer months (Summer, Spring, Fall) compared to Winter.
+-   **User type reveals distinct usage patterns**. Registered members constitute the majority of users and account for a substantially higher number of trips overall. Members primarily use the bikes for regular, shorter trips, likely for commuting or errands during weekdays, particularly during morning and evening peak hours. Casual users, while taking fewer trips, tend to have significantly longer average trip durations and use the service more for leisure activities on weekends and throughout the afternoon and early evening.
+-   **Weather conditions have a clear impact on usage**. Clear weather days see a disproportionately higher volume of rides compared to their frequency, indicating they are "Over-used". Conversely, days with rain or snow result in significantly lower ridership than expected based on the frequency of these conditions, indicating that users ride less when it is rainy or snowy. This suggests a negative impact of precipitation on Citi Bike usage.
+-   **Electric bikes are more popular in terms of trip volume**, being used for a significantly higher number of trips compared to classic bikes. However, the average trip duration is slightly longer for classic bikes.
+-   **Geographical location of stations matters**, with certain "hot spots" or areas showing a high concentration of trip origins, likely corresponding to areas with high demand such as business districts, residential areas, or transportation hubs. "W 21 St & 6 Ave" was identified as the most frequent starting station.
