@@ -8,7 +8,7 @@ format:
     toc-depth: 3
     number-sections: true
     code-fold: true
-    code-summary: "Mostrar Código"
+    code-summary: "Show code"
 editor: visual
 ---
 
