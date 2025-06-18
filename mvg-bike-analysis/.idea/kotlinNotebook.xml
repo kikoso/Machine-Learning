@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="KotlinNotebookPlotExportOptionsProvider">
+    <option name="fileName" value="plot6.png" />
+    <option name="format" value="PNG" />
+    <option name="letsPlotFlavor" value="HIGH_CONTRAST_LIGHT" />
+  </component>
+</project>
