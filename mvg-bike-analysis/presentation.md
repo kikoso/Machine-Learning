@@ -30,8 +30,6 @@ Some of my key open-source contributions include:
 * **Android Maps Compose:** Contributed to bridging the gap between traditional Google Maps APIs and modern Android Jetpack Compose paradigms.
 * **Android Maps Utils:** Active contributor to utility libraries for advanced map functionality, including heatmaps, marker clustering, and GeoJSON integration.
 
-![Android Maps Compose height:300](img/scalebar.png)
-
 * I love turning raw geospatial data (like we see in this dataset!) into actionable, visual insights.
 
 ---
@@ -87,6 +85,7 @@ Through this stack, we analyzed:
 **Let's connect!**
 * *GitHub:* [kikoso](https://github.com/kikoso)
 * *Email:* eenriquelopez@gmail.com
+* *Notebook Code:* [kikoso/Machine-Learning (GitHub)](https://github.com/kikoso/Machine-Learning/blob/main/mvg-bike-analysis/bike-analysis.ipynb)
 
 ---
 
