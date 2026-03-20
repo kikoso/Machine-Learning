@@ -22,6 +22,16 @@ backgroundColor: #f8f9fa
 * Strongly interested in how open technologies can solve real-world urban challenges.
 
 ---
+# 🗺️ My Work in Open Source GIS
+
+I have a deep background in mapping technologies and geospatial data visualization. 
+Some of my key open-source contributions include:
+
+* **Android Maps Compose:** Contributed to bridging the gap between traditional Google Maps APIs and modern Android Jetpack Compose paradigms.
+* **Android Maps Utils:** Active contributor to utility libraries for advanced map functionality, including heatmaps, marker clustering, and GeoJSON integration.
+* I love turning raw geospatial data (like we see in this dataset!) into actionable, visual insights.
+
+---
 
 # 🌍 Open Data in Munich
 
