@@ -28,7 +28,7 @@ I have a deep background in mapping technologies and geospatial data visualizati
 Some of my key open-source contributions include:
 
 * **Android Maps Compose:** Contributed to bridging the gap between traditional Google Maps APIs and modern Android Jetpack Compose paradigms.
-* **Android Maps Utils:** Active contributor to utility libraries for advanced map functionality, including heatmaps, marker clustering, and GeoJSON integration.
+* **Android Maps Utils:** Maintainer and main developer for utility libraries for advanced map functionality, including heatmaps, marker clustering, and GeoJSON integration.
 
 * I love turning raw geospatial data (like we see in this dataset!) into actionable, visual insights.
 
